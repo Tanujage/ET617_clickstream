@@ -21,11 +21,7 @@ from clickstream import views as click_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', click_views.index, name='courses:index'),
-    path('register/', click_views.register_view, name='register'),
-    path('login/', click_views.login_view, name='login'),
-    path('content/<slug:slug>/', click_views.content_detail, name='content_detail'),
-    path('api/events/', click_views.ingest_events, name='api_events'),
-    path('api/quiz_attempts/', click_views.quiz_attempt_view, name='api_quiz_attempts'),
+    path('track/', click_views.track_event, name='track_event'),
+    path('events/',click_views.view_events, name='view_events'),
 ]
 

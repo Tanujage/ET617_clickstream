@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Quiz App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 40px;
+            width: 100%;
+            max-width: 500px;
+            margin: 20px;
+        }
+
+        .quiz-container {
+            max-width: 800px;
+        }
+
+        .results-container {
+            max-width: 600px;
+            text-align: center;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        h1, h2 {
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        input[type="text"], input[type="email"], input[type="password"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            margin-top: 15px;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            box-shadow: 0 10px 20px rgba(108, 117, 125, 0.3);
+        }
+
+        .btn-success {
+            background: #28a745;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+            box-shadow: 0 10px 20px rgba(40, 167, 69, 0.3);
+        }
+
+        .btn-danger {
+            background: #dc3545;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+            box-shadow: 0 10px 20px rgba(220, 53, 69, 0.3);
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #f5c6cb;
+            display: none;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #c3e6cb;
+            display: none;
+        }
+
+        .video-container {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        video {
+            width: 100%;
+            max-width: 600px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .quiz-question {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .quiz-question h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .quiz-options {
+            display: grid;
+            gap: 10px;
+        }
+
+        .quiz-option {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid #e1e5e9;
+        }
+
+        .quiz-option:hover {
+            background: #f0f2ff;
+            border-color: #667eea;
+        }
+
+        .quiz-option input[type="radio"] {
+            margin-right: 12px;
+            transform: scale(1.2);
+        }
+
+        .score-display {
+            font-size: 3rem;
+            font-weight: bold;
+            margin: 30px 0;
+            padding: 30px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .score-details {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .toggle-link {
+            color: #667eea;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .toggle-link:hover {
+            text-decoration: underline;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e1e5e9;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .field-error {
+            border-color: #dc3545 !important;
+            box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1) !important;
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            padding: 20px;
+            z-index: 1000;
+        }
+
+        .navbar button {
+            padding: 10px 20px;
+            margin-left: 10px;
+            border: none;
+            border-radius: 25px;
+            background: rgba(255,255,255,0.9);
+            color: #333;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .navbar button:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <div class="navbar" id="navbar" style="display: none;">
+        <button onclick="logout()">Logout</button>
+    </div>
+
+    <!-- Registration Page -->
+    <div id="registerPage" class="page active">
+        <div class="container">
+            <h1>Join the Quiz</h1>
+
+            <div id="registerError" class="error-message"></div>
+            <div id="registerSuccess" class="success-message"></div>
+            <div id="registerLoading" class="loading">
+                <div class="spinner"></div>
+                <p>Creating your account...</p>
+            </div>
+
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="firstName">First Name</label>
+                    <input type="text" id="firstName" name="first_name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="lastName">Last Name</label>
+                    <input type="text" id="lastName" name="last_name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <input type="password" id="confirmPassword" name="confirm_password" required>
+                </div>
+
+                <button type="submit" class="btn">Create Account</button>
+
+                <p style="text-align: center; margin-top: 20px;">
+                    Already have an account?
+                    <a href="#" class="toggle-link" onclick="showLogin()">Login here</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Login Page -->
+    <div id="loginPage" class="page">
+        <div class="container">
+            <h1>Welcome Back</h1>
+
+            <div id="loginError" class="error-message"></div>
+            <div id="loginSuccess" class="success-message"></div>
+            <div id="loginLoading" class="loading">
+                <div class="spinner"></div>
+                <p>Signing you in...</p>
+            </div>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" name="email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" name="password" required>
+                </div>
+
+                <button type="submit" class="btn">Login</button>
+
+                <p style="text-align: center; margin-top: 20px;">
+                    Don't have an account?
+                    <a href="#" class="toggle-link" onclick="showRegister()">Register here</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Video Page -->
+    <div id="videoPage" class="page">
+        <div class="container quiz-container">
+            <h2>Watch the Video</h2>
+
+            <div id="videoError" class="error-message"></div>
+
+            <div class="video-container">
+                <video id="mainVideo" controls>
+                    <source src="{% static '/Video.mp4' %}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="videoProgress" style="width: 0%"></div>
+            </div>
+
+            <p style="text-align: center; margin-bottom: 20px; color: #666;">
+                Watch the complete video to proceed to the quiz
+            </p>
+
+            <button id="proceedToQuiz" class="btn" disabled onclick="showQuiz()">
+                Proceed to Quiz
+            </button>
+        </div>
+    </div>
+
+    <!-- Quiz Page -->
+   <div id="quizPage" class="page">
+    <div class="container quiz-container">
+        <h2>Quiz Time!</h2>
+
+        <div id="quizError" class="error-message"></div>
+        <div id="quizLoading" class="loading">
+            <div class="spinner"></div>
+            <p>Submitting your answers...</p>
+        </div>
+
+        <form id="quizForm">
+            <!-- Question 1 -->
+            <div class="quiz-question">
+                <h3>1. Solve: 2x + 5 = 13</h3>
+                <div class="quiz-options">
+                    <label class="quiz-option">
+                        <input type="radio" name="q1" value="a" required>
+                        <span>x = 4</span>
+                    </label>
+                    <label class="quiz-option">
+                        <input type="radio" name="q1" value="b">
+                        <span>x = 3</span>
+                    </label>
+                    <label class="quiz-option">
+                        <input type="radio" name="q1" value="c">
+                        <span>x = 8</span>
+                    </label>
+                    <label class="quiz-option">
+                        <input type="radio" name="q1" value="d">
+                        <span>x = -4</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 2 -->
+            <div class="quiz-question">
+                <h3>2. Solve: 5y - 7 = 18</h3>
+                <div class="quiz-options">
+                    <label class="quiz-option">
+                        <input type="radio" name="q2" value="a" required>
+                        <span>y = 4</span>
+                    </label>
+                    <label class="quiz-option">
+                        <input type="radio" name="q2" value="b">
+                        <span>y = 5</span>
+                    </label>
+                    <label class="quiz-option">
+                        <input type="radio" name="q2" value="c">
+                        <span>y = 7</span>
+                    </label>
+                    <label class="quiz-option">
+                        <input type="radio" name="q2" value="d">
+                        <span>y = 2</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 3 -->
+            <div class="quiz-question">
+                <h3>3. Solve: 3x = 12</h3>
+                <div class="quiz-options">
+                    <label class="quiz-option">
+                        <input type="radio" name="q3" value="a" required>
+                        <span>x = 4</span>
+                    </label>
+                    <label class="quiz-option">
+                        <input type="radio" name="q3" value="b">
+                        <span>x = 3</span>
+                    </label>
+                    <label class="quiz-option">
+                        <input type="radio" name="q3" value="c">
+                        <span>x = 6</span>
+                    </label>
+                    <label class="quiz-option">
+                        <input type="radio" name="q3" value="d">
+                        <span>x = -4</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 4 -->
+            <div class="quiz-question">
+                <h3>4. Which of the following is the first step to solve 2x - 9 = 7?</h3>
+                <div class="quiz-options">
+                    <label class="quiz-option">
+                        <input type="radio" name="q4" value="a" required>
+                        <span>Subtract 9 from both sides</span>
+                    </label>
+                    <label class="quiz-option">
+                        <input type="radio" name="q4" value="b">
+                        <span>Add 9 to both sides</span>
+                    </label>
+                    <label class="quiz-option">
+                        <input type="radio" name="q4" value="c">
+                        <span>Multiply both sides by 2</span>
+                    </label>
+                    <label class="quiz-option">
+                        <input type="radio" name="q4" value="d">
+                        <span>Divide both sides by 2</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 5 -->
+            <div class="quiz-question">
+                <h3>5. Solve: x/4 + 3 = 7</h3>
+                <div class="quiz-options">
+                    <label class="quiz-option">
+                        <input type="radio" name="q5" value="a" required>
+                        <span>x = 16</span>
+                    </label>
+                    <label class="quiz-option">
+                        <input type="radio" name="q5" value="b">
+                        <span>x = 8</span>
+                    </label>
+                    <label class="quiz-option">
+                        <input type="radio" name="q5" value="c">
+                        <span>x = 12</span>
+                    </label>
+                    <label class="quiz-option">
+                        <input type="radio" name="q5" value="d">
+                        <span>x = 4</span>
+                    </label>
+                </div>
+            </div>
+
+            <button type="submit" class="btn">Submit Quiz</button>
+        </form>
+    </div>
+   </div>
+
+
+    <!-- Results Page -->
+    <div id="resultsPage" class="page">
+        <div class="container results-container">
+            <h2>Quiz Results</h2>
+
+            <div class="score-display" id="scoreDisplay">
+                Score: 0/4
+            </div>
+
+            <div class="score-details">
+                <h3 id="resultMessage">Great job!</h3>
+                <p id="resultDescription">You've completed the quiz.</p>
+            </div>
+
+            <button class="btn btn-success" onclick="retakeQuiz()">
+                Retake Quiz
+            </button>
+
+            <button class="btn btn-danger" onclick="logout()">
+                Logout
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Global state
+        let currentUser = null;
+        let quizAnswers = {};
+
+        // Error handling utilities
+        function showError(elementId, message) {
+            const errorElement = document.getElementById(elementId);
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+            setTimeout(() => {
+                errorElement.style.display = 'none';
+            }, 5000);
+        }
+
+        function showSuccess(elementId, message) {
+            const successElement = document.getElementById(elementId);
+            successElement.textContent = message;
+            successElement.style.display = 'block';
+            setTimeout(() => {
+                successElement.style.display = 'none';
+            }, 3000);
+        }
+
+        function showLoading(elementId) {
+            document.getElementById(elementId).style.display = 'block';
+        }
+
+        function hideLoading(elementId) {
+            document.getElementById(elementId).style.display = 'none';
+        }
+
+        function clearFieldErrors() {
+            document.querySelectorAll('.field-error').forEach(field => {
+                field.classList.remove('field-error');
+            });
+        }
+
+        function highlightFieldError(fieldName) {
+            const field = document.querySelector(`[name="${fieldName}"]`);
+            if (field) {
+                field.classList.add('field-error');
+                field.focus();
+            }
+        }
+
+        // Page navigation
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(pageId).classList.add('active');
+
+            // Show/hide navbar based on page
+            const navbar = document.getElementById('navbar');
+            if (pageId === 'registerPage' || pageId === 'loginPage') {
+                navbar.style.display = 'none';
+            } else {
+                navbar.style.display = 'block';
+            }
+        }
+
+        function showLogin() {
+            showPage('loginPage');
+        }
+
+        function showRegister() {
+            showPage('registerPage');
+        }
+
+        function showVideo() {
+            showPage('videoPage');
+            initializeVideo();
+        }
+
+        function showQuiz() {
+            showPage('quizPage');
+        }
+
+        function showResults(score) {
+            showPage('resultsPage');
+            displayResults(score);
+        }
+
+        // Registration handling
+        document.getElementById('registerForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            clearFieldErrors();
+
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+
+            // Client-side validation
+            const validationErrors = validateRegistration(data);
+            if (validationErrors.length > 0) {
+                showError('registerError', validationErrors.join('<br>'));
+                return;
+            }
+
+            showLoading('registerLoading');
+
+            try {
+                // Simulate API call
+                await new Promise(resolve => setTimeout(resolve, 1500));
+
+                // Simulate server response (you would replace this with actual Django API call)
+                const success = Math.random() > 0.3; // 70% success rate for demo
+
+                if (success) {
+                    currentUser = { email: data.email, name: `${data.first_name} ${data.last_name}` };
+                    showSuccess('registerSuccess', 'Account created successfully! Redirecting...');
+                    setTimeout(() => showVideo(), 2000);
+                } else {
+                    throw new Error('Email already exists or server error occurred');
+                }
+            } catch (error) {
+                showError('registerError', error.message);
+            } finally {
+                hideLoading('registerLoading');
+            }
+        });
+
+        // Login handling
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            clearFieldErrors();
+
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+
+            // Basic validation
+            if (!data.email || !data.password) {
+                showError('loginError', 'Please fill in all fields');
+                return;
+            }
+
+            showLoading('loginLoading');
+
+            try {
+                await new Promise(resolve => setTimeout(resolve, 1200));
+
+                // Simulate server response
+                const success = Math.random() > 0.2; // 80% success rate for demo
+
+                if (success) {
+                    currentUser = { email: data.email, name: 'User' };
+                    showSuccess('loginSuccess', 'Login successful! Redirecting...');
+                    setTimeout(() => showVideo(), 2000);
+                } else {
+                    throw new Error('Invalid email or password');
+                }
+            } catch (error) {
+                showError('loginError', error.message);
+                highlightFieldError('email');
+            } finally {
+                hideLoading('loginLoading');
+            }
+        });
+
+        // Registration validation
+        function validateRegistration(data) {
+            const errors = [];
+
+            if (!data.first_name.trim()) {
+                errors.push('First name is required');
+                highlightFieldError('first_name');
+            }
+
+            if (!data.last_name.trim()) {
+                errors.push('Last name is required');
+                highlightFieldError('last_name');
+            }
+
+            if (!data.email.trim()) {
+                errors.push('Email is required');
+                highlightFieldError('email');
+            } else if (!isValidEmail(data.email)) {
+                errors.push('Please enter a valid email address');
+                highlightFieldError('email');
+            }
+
+            if (!data.password) {
+                errors.push('Password is required');
+                highlightFieldError('password');
+            } else if (data.password.length < 6) {
+                errors.push('Password must be at least 6 characters long');
+                highlightFieldError('password');
+            }
+
+            if (data.password !== data.confirm_password) {
+                errors.push('Passwords do not match');
+                highlightFieldError('confirm_password');
+            }
+
+            return errors;
+        }
+
+        function isValidEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        // Video handling
+        function initializeVideo() {
+            const video = document.getElementById('mainVideo');
+            const progressBar = document.getElementById('videoProgress');
+            const proceedBtn = document.getElementById('proceedToQuiz');
+
+            video.addEventListener('loadstart', function() {
+                console.log('Video loading started');
+            });
+
+            video.addEventListener('error', function(e) {
+                showError('videoError', 'Failed to load video. Please check your internet connection and try again.');
+                console.error('Video error:', e);
+            });
+
+            video.addEventListener('timeupdate', function() {
+                const progress = (video.currentTime / video.duration) * 100;
+                progressBar.style.width = progress + '%';
+
+                // Enable quiz button when video is 90% complete
+                if (progress >= 90) {
+                    proceedBtn.disabled = false;
+                    proceedBtn.textContent = 'Proceed to Quiz';
+                }
+            });
+
+            video.addEventListener('ended', function() {
+                proceedBtn.disabled = false;
+                proceedBtn.textContent = 'Proceed to Quiz';
+                progressBar.style.width = '100%';
+            });
+        }
+
+        // Quiz handling
+        document.getElementById('quizForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            const answers = Object.fromEntries(formData);
+
+            // Validate all questions are answered
+            const requiredQuestions = ['q1', 'q2', 'q3', 'q4'];
+            const missingAnswers = requiredQuestions.filter(q => !answers[q]);
+
+            if (missingAnswers.length > 0) {
+                showError('quizError', `Please answer question ${missingAnswers[0].slice(1)}`);
+                return;
+            }
+
+            showLoading('quizLoading');
+
+            try {
+                await new Promise(resolve => setTimeout(resolve, 1500));
+
+                // Calculate score (for demo purposes)
+                const correctAnswers = { q1: 'b', q2: 'c', q3: 'd', q4: 'b' };
+                let score = 0;
+
+                for (let question in correctAnswers) {
+                    if (answers[question] === correctAnswers[question]) {
+                        score++;
+                    }
+                }
+
+                quizAnswers = answers;
+                showResults(score);
+
+            } catch (error) {
+                showError('quizError', 'Failed to submit quiz. Please try again.');
+            } finally {
+                hideLoading('quizLoading');
+            }
+        });
+
+        // Results display
+        function displayResults(score) {
+            const scoreDisplay = document.getElementById('scoreDisplay');
+            const resultMessage = document.getElementById('resultMessage');
+            const resultDescription = document.getElementById('resultDescription');
+
+            scoreDisplay.textContent = `Score: ${score}/4`;
+
+            if (score === 4) {
+                resultMessage.textContent = 'Perfect Score! 🎉';
+                resultDescription.textContent = 'Congratulations! You got all questions correct.';
+            } else if (score >= 3) {
+                resultMessage.textContent = 'Excellent! 👏';
+                resultDescription.textContent = 'Great job! You performed very well.';
+            } else if (score >= 2) {
+                resultMessage.textContent = 'Good Effort! 👍';
+                resultDescription.textContent = 'Not bad! You can improve with practice.';
+            } else {
+                resultMessage.textContent = 'Keep Trying! 💪';
+                resultDescription.textContent = 'Don\'t give up! Practice makes perfect.';
+            }
+        }
+
+        // Retake quiz
+        function retakeQuiz() {
+            // Reset form
+            document.getElementById('quizForm').reset();
+
+            // Clear any error messages
+            document.querySelectorAll('.error-message').forEach(msg => {
+                msg.style.display = 'none';
+            });
+
+            showVideo();
+        }
+
+        // Logout
+        function logout() {
+            currentUser = null;
+            quizAnswers = {};
+
+            // Reset all forms
+            document.querySelectorAll('form').forEach(form => form.reset());
+
+            // Clear all messages
+            document.querySelectorAll('.error-message, .success-message').forEach(msg => {
+                msg.style.display = 'none';
+            });
+
+            // Reset video
+            const video = document.getElementById('mainVideo');
+            video.currentTime = 0;
+            document.getElementById('proceedToQuiz').disabled = true;
+            document.getElementById('videoProgress').style.width = '0%';
+
+            showPage('registerPage');
+        }
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Video Quiz App initialized');
+        });
+
+function recordEvent(eventType, meta = {}) {
+    fetch('/api/click/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken') // Django CSRF
+        },
+        body: JSON.stringify({
+            event_type: eventType,
+            path: window.location.pathname,
+            meta: meta
+        })
+    }).then(res => res.json())
+      .then(data => console.log("Clickstream recorded:", data))
+      .catch(err => console.error("Clickstream error:", err));
+}
+
+// Helper for CSRF token (Django requirement)
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+            cookie = cookie.trim();
+            if (cookie.startsWith(name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// Example: Track all button clicks
+document.addEventListener('click', function(e) {
+    if (e.target.tagName === 'BUTTON') {
+        recordEvent('button_click', {id: e.target.id, text: e.target.innerText});
+    }
+});
+
+// Example: Track video play/pause
+document.addEventListener('DOMContentLoaded', () => {
+    const video = document.getElementById('mainVideo');
+    if (video) {
+        video.addEventListener('play', () => recordEvent('video_play', {currentTime: video.currentTime}));
+        video.addEventListener('pause', () => recordEvent('video_pause', {currentTime: video.currentTime}));
+        video.addEventListener('ended', () => recordEvent('video_ended', {}));
+    }
+});
+
+    </script>
+</body>
+</html>

@@ -16,12 +16,20 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.urls import path, include
-from clickstream import views as click_views
+from django.urls import path
+from clickstream import views as views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('track/', click_views.track_event, name='track_event'),
-    path('events/',click_views.view_events, name='view_events'),
+    path('', views.quiz_view, name='quiz_home'),
+    path('register/', views.register_view, name='register'),
+    path('login/', views.login_view, name='login'),
+    path('accounts/login/', views.login_view, name='accounts_login'),  # Add this line
+    path('logout/', views.logout_view, name='logout'),
+    path('quiz/', views.quiz_view, name='quiz'),
+    path('video/', views.video_view, name='video'),
+    path('api/click/', views.collect_click_event, name='collect_click'),
 ]
+
+
 

@@ -75,15 +75,18 @@ WSGI_APPLICATION = 'ET617_clickstream.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+import os
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'HOST': os.getenv('DB_HOST', 'ET617.supabase.co'),
+        'HOST': os.getenv('DB_HOST', 'db.vostckkwshccoofrchbz.supabase.co'),
         'NAME': os.getenv('DB_NAME', 'postgres'),
         'USER': os.getenv('DB_USER', 'postgres'),
         'PASSWORD': os.getenv('DB_PASSWORD', 'Tanvij@13579'),
         'PORT': os.getenv('DB_PORT', '5432'),
     }
+}
 
 
 

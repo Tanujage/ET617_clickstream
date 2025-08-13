@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<!-- Video Page -->
+<div id="videoPage" class="page">
+    <div class="container quiz-container">
+        <h2>Watch the Video</h2>
+
+        <div id="videoError" class="error-message"></div>
+
+        <div class="video-container">
+            <video id="mainVideo" width="640" controls>
+            <source src="{% static '/static/Video.mp4' %}" type="video/mp4">
+            Your browser does not support the video tag.
+            </video>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="videoProgress" style="width: 0%"></div>
+        </div>
+
+        <p style="text-align: center; margin-bottom: 20px; color: #666;">
+            Watch the complete video to proceed to the quiz
+        </p>
+
+        <button id="proceedToQuiz" class="btn" disabled onclick="showQuiz()">
+            Proceed to Quiz
+        </button>
+    </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const v = document.getElementById('mainVideo');
+    v.addEventListener('play', () => window.recordEvent('video_play',{currentTime: v.currentTime}));
+    v.addEventListener('pause', () => window.recordEvent('video_pause',{currentTime: v.currentTime}));
+    v.addEventListener('ended', () => window.recordEvent('video_ended',{}));
+});
+</script>
+{% endblock %}

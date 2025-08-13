@@ -1,0 +1,338 @@
+<script>
+    // Global state
+    let currentUser = null;
+    let quizAnswers = {};
+
+    // Error handling utilities
+    function showError(elementId, message) {
+        const errorElement = document.getElementById(elementId);
+        errorElement.textContent = message;
+        errorElement.style.display = 'block';
+        setTimeout(() => {
+            errorElement.style.display = 'none';
+        }, 5000);
+    }
+
+    function showSuccess(elementId, message) {
+        const successElement = document.getElementById(elementId);
+        successElement.textContent = message;
+        successElement.style.display = 'block';
+        setTimeout(() => {
+            successElement.style.display = 'none';
+        }, 3000);
+    }
+
+    function showLoading(elementId) {
+        document.getElementById(elementId).style.display = 'block';
+    }
+
+    function hideLoading(elementId) {
+        document.getElementById(elementId).style.display = 'none';
+    }
+
+    function clearFieldErrors() {
+        document.querySelectorAll('.field-error').forEach(field => {
+            field.classList.remove('field-error');
+        });
+    }
+
+    function highlightFieldError(fieldName) {
+        const field = document.querySelector(`[name="${fieldName}"]`);
+        if (field) {
+            field.classList.add('field-error');
+            field.focus();
+        }
+    }
+
+    // Page navigation
+    function showPage(pageId) {
+        document.querySelectorAll('.page').forEach(page => {
+            page.classList.remove('active');
+        });
+        document.getElementById(pageId).classList.add('active');
+
+        // Show/hide navbar based on page
+        const navbar = document.getElementById('navbar');
+        if (pageId === 'registerPage' || pageId === 'loginPage') {
+            navbar.style.display = 'none';
+        } else {
+            navbar.style.display = 'block';
+        }
+    }
+
+    function showLogin() {
+        showPage('loginPage');
+    }
+
+    function showRegister() {
+        showPage('registerPage');
+    }
+
+    function showVideo() {
+        showPage('videoPage');
+        initializeVideo();
+    }
+
+    function showQuiz() {
+        showPage('quizPage');
+    }
+
+    function showResults(score) {
+        showPage('resultsPage');
+        displayResults(score);
+    }
+
+    // Registration handling
+    document.getElementById('registerForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        clearFieldErrors();
+
+        const formData = new FormData(this);
+        const data = Object.fromEntries(formData);
+
+        // Client-side validation
+        const validationErrors = validateRegistration(data);
+        if (validationErrors.length > 0) {
+            showError('registerError', validationErrors.join('<br>'));
+            return;
+        }
+
+        showLoading('registerLoading');
+
+        try {
+            // Simulate API call
+            await new Promise(resolve => setTimeout(resolve, 1500));
+
+            // Simulate server response (you would replace this with actual Django API call)
+            const success = Math.random() > 0.3; // 70% success rate for demo
+
+            if (success) {
+                currentUser = { email: data.email, name: `${data.first_name} ${data.last_name}` };
+                showSuccess('registerSuccess', 'Account created successfully! Redirecting...');
+                setTimeout(() => showVideo(), 2000);
+            } else {
+                throw new Error('Email already exists or server error occurred');
+            }
+        } catch (error) {
+            showError('registerError', error.message);
+        } finally {
+            hideLoading('registerLoading');
+        }
+    });
+
+    // Login handling
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        clearFieldErrors();
+
+        const formData = new FormData(this);
+        const data = Object.fromEntries(formData);
+
+        // Basic validation
+        if (!data.email || !data.password) {
+            showError('loginError', 'Please fill in all fields');
+            return;
+        }
+
+        showLoading('loginLoading');
+
+        try {
+            await new Promise(resolve => setTimeout(resolve, 1200));
+
+            // Simulate server response
+            const success = Math.random() > 0.2; // 80% success rate for demo
+
+            if (success) {
+                currentUser = { email: data.email, name: 'User' };
+                showSuccess('loginSuccess', 'Login successful! Redirecting...');
+                setTimeout(() => showVideo(), 2000);
+            } else {
+                throw new Error('Invalid email or password');
+            }
+        } catch (error) {
+            showError('loginError', error.message);
+            highlightFieldError('email');
+        } finally {
+            hideLoading('loginLoading');
+        }
+    });
+
+    // Registration validation
+    function validateRegistration(data) {
+        const errors = [];
+
+        if (!data.first_name.trim()) {
+            errors.push('First name is required');
+            highlightFieldError('first_name');
+        }
+
+        if (!data.last_name.trim()) {
+            errors.push('Last name is required');
+            highlightFieldError('last_name');
+        }
+
+        if (!data.email.trim()) {
+            errors.push('Email is required');
+            highlightFieldError('email');
+        } else if (!isValidEmail(data.email)) {
+            errors.push('Please enter a valid email address');
+            highlightFieldError('email');
+        }
+
+        if (!data.password) {
+            errors.push('Password is required');
+            highlightFieldError('password');
+        } else if (data.password.length < 6) {
+            errors.push('Password must be at least 6 characters long');
+            highlightFieldError('password');
+        }
+
+        if (data.password !== data.confirm_password) {
+            errors.push('Passwords do not match');
+            highlightFieldError('confirm_password');
+        }
+
+        return errors;
+    }
+
+    function isValidEmail(email) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
+    // Video handling
+    function initializeVideo() {
+        const video = document.getElementById('mainVideo');
+        const progressBar = document.getElementById('videoProgress');
+        const proceedBtn = document.getElementById('proceedToQuiz');
+
+        video.addEventListener('loadstart', function() {
+            console.log('Video loading started');
+        });
+
+        video.addEventListener('error', function(e) {
+            showError('videoError', 'Failed to load video. Please check your internet connection and try again.');
+            console.error('Video error:', e);
+        });
+
+        video.addEventListener('timeupdate', function() {
+            const progress = (video.currentTime / video.duration) * 100;
+            progressBar.style.width = progress + '%';
+
+            // Enable quiz button when video is 90% complete
+            if (progress >= 90) {
+                proceedBtn.disabled = false;
+                proceedBtn.textContent = 'Proceed to Quiz';
+            }
+        });
+
+        video.addEventListener('ended', function() {
+            proceedBtn.disabled = false;
+            proceedBtn.textContent = 'Proceed to Quiz';
+            progressBar.style.width = '100%';
+        });
+    }
+
+    // Quiz handling
+    document.getElementById('quizForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const formData = new FormData(this);
+        const answers = Object.fromEntries(formData);
+
+        // Validate all questions are answered
+        const requiredQuestions = ['q1', 'q2', 'q3', 'q4'];
+        const missingAnswers = requiredQuestions.filter(q => !answers[q]);
+
+        if (missingAnswers.length > 0) {
+            showError('quizError', `Please answer question ${missingAnswers[0].slice(1)}`);
+            return;
+        }
+
+        showLoading('quizLoading');
+
+        try {
+            await new Promise(resolve => setTimeout(resolve, 1500));
+
+            // Calculate score (for demo purposes)
+            const correctAnswers = { q1: 'b', q2: 'c', q3: 'd', q4: 'b' };
+            let score = 0;
+
+            for (let question in correctAnswers) {
+                if (answers[question] === correctAnswers[question]) {
+                    score++;
+                }
+            }
+
+            quizAnswers = answers;
+            showResults(score);
+
+        } catch (error) {
+            showError('quizError', 'Failed to submit quiz. Please try again.');
+        } finally {
+            hideLoading('quizLoading');
+        }
+    });
+
+    // Results display
+    function displayResults(score) {
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const resultMessage = document.getElementById('resultMessage');
+        const resultDescription = document.getElementById('resultDescription');
+
+        scoreDisplay.textContent = `Score: ${score}/4`;
+
+        if (score === 4) {
+            resultMessage.textContent = 'Perfect Score! 🎉';
+            resultDescription.textContent = 'Congratulations! You got all questions correct.';
+        } else if (score >= 3) {
+            resultMessage.textContent = 'Excellent! 👏';
+            resultDescription.textContent = 'Great job! You performed very well.';
+        } else if (score >= 2) {
+            resultMessage.textContent = 'Good Effort! 👍';
+            resultDescription.textContent = 'Not bad! You can improve with practice.';
+        } else {
+            resultMessage.textContent = 'Keep Trying! 💪';
+            resultDescription.textContent = 'Don\'t give up! Practice makes perfect.';
+        }
+    }
+
+    // Retake quiz
+    function retakeQuiz() {
+        // Reset form
+        document.getElementById('quizForm').reset();
+
+        // Clear any error messages
+        document.querySelectorAll('.error-message').forEach(msg => {
+            msg.style.display = 'none';
+        });
+
+        showVideo();
+    }
+
+    // Logout
+    function logout() {
+        currentUser = null;
+        quizAnswers = {};
+
+        // Reset all forms
+        document.querySelectorAll('form').forEach(form => form.reset());
+
+        // Clear all messages
+        document.querySelectorAll('.error-message, .success-message').forEach(msg => {
+            msg.style.display = 'none';
+        });
+
+        // Reset video
+        const video = document.getElementById('mainVideo');
+        video.currentTime = 0;
+        document.getElementById('proceedToQuiz').disabled = true;
+        document.getElementById('videoProgress').style.width = '0%';
+
+        showPage('registerPage');
+    }
+
+    // Initialize app
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Video Quiz App initialized');
+    });
+</script>

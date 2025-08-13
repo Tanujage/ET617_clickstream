@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+{% block title %}Quiz{% endblock %}
+{% block content %}
+<!-- Quiz Page -->
+<div id="quizPage" class="page">
+<div class="container quiz-container">
+    <h2>Quiz Time!</h2>
+
+    <div id="quizError" class="error-message"></div>
+    <div id="quizLoading" class="loading">
+        <div class="spinner"></div>
+        <p>Submitting your answers...</p>
+    </div>
+
+    <form id="quizForm">
+        <!-- Question 1 -->
+        <div class="quiz-question">
+            <h3>1. Solve: 2x + 5 = 13</h3>
+            <div class="quiz-options">
+                <label class="quiz-option">
+                    <input type="radio" name="q1" value="a" required>
+                    <span>x = 4</span>
+                </label>
+                <label class="quiz-option">
+                    <input type="radio" name="q1" value="b">
+                    <span>x = 3</span>
+                </label>
+                <label class="quiz-option">
+                    <input type="radio" name="q1" value="c">
+                    <span>x = 8</span>
+                </label>
+                <label class="quiz-option">
+                    <input type="radio" name="q1" value="d">
+                    <span>x = -4</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Question 2 -->
+        <div class="quiz-question">
+            <h3>2. Solve: 5y - 7 = 18</h3>
+            <div class="quiz-options">
+                <label class="quiz-option">
+                    <input type="radio" name="q2" value="a" required>
+                    <span>y = 4</span>
+                </label>
+                <label class="quiz-option">
+                    <input type="radio" name="q2" value="b">
+                    <span>y = 5</span>
+                </label>
+                <label class="quiz-option">
+                    <input type="radio" name="q2" value="c">
+                    <span>y = 7</span>
+                </label>
+                <label class="quiz-option">
+                    <input type="radio" name="q2" value="d">
+                    <span>y = 2</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Question 3 -->
+        <div class="quiz-question">
+            <h3>3. Solve: 3x = 12</h3>
+            <div class="quiz-options">
+                <label class="quiz-option">
+                    <input type="radio" name="q3" value="a" required>
+                    <span>x = 4</span>
+                </label>
+                <label class="quiz-option">
+                    <input type="radio" name="q3" value="b">
+                    <span>x = 3</span>
+                </label>
+                <label class="quiz-option">
+                    <input type="radio" name="q3" value="c">
+                    <span>x = 6</span>
+                </label>
+                <label class="quiz-option">
+                    <input type="radio" name="q3" value="d">
+                    <span>x = -4</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Question 4 -->
+        <div class="quiz-question">
+            <h3>4. Which of the following is the first step to solve 2x - 9 = 7?</h3>
+            <div class="quiz-options">
+                <label class="quiz-option">
+                    <input type="radio" name="q4" value="a" required>
+                    <span>Subtract 9 from both sides</span>
+                </label>
+                <label class="quiz-option">
+                    <input type="radio" name="q4" value="b">
+                    <span>Add 9 to both sides</span>
+                </label>
+                <label class="quiz-option">
+                    <input type="radio" name="q4" value="c">
+                    <span>Multiply both sides by 2</span>
+                </label>
+                <label class="quiz-option">
+                    <input type="radio" name="q4" value="d">
+                    <span>Divide both sides by 2</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Question 5 -->
+        <div class="quiz-question">
+            <h3>5. Solve: x/4 + 3 = 7</h3>
+            <div class="quiz-options">
+                <label class="quiz-option">
+                    <input type="radio" name="q5" value="a" required>
+                    <span>x = 16</span>
+                </label>
+                <label class="quiz-option">
+                    <input type="radio" name="q5" value="b">
+                    <span>x = 8</span>
+                </label>
+                <label class="quiz-option">
+                    <input type="radio" name="q5" value="c">
+                    <span>x = 12</span>
+                </label>
+                <label class="quiz-option">
+                    <input type="radio" name="q5" value="d">
+                    <span>x = 4</span>
+                </label>
+            </div>
+        </div>
+
+        <button type="submit" class="btn">Submit Quiz</button>
+    </form>
+</div>
+</div>
+{% endblock %}

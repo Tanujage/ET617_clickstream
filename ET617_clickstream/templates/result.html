@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- Results Page -->
+<div id="resultsPage" class="page">
+    <div class="container results-container">
+        <h2>Quiz Results</h2>
+
+        <div class="score-display" id="scoreDisplay">
+            Score: 0/4
+        </div>
+
+        <div class="score-details">
+            <h3 id="resultMessage">Great job!</h3>
+            <p id="resultDescription">You've completed the quiz.</p>
+        </div>
+
+        <button class="btn btn-success" onclick="retakeQuiz()">
+            Retake Quiz
+        </button>
+
+        <button class="btn btn-danger" onclick="logout()">
+            Logout
+        </button>
+    </div>
+</div>
+{% endblock %}
